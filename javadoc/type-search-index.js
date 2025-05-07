@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"<Unnamed>","l":"Cell"},{"p":"<Unnamed>","l":"Command"},{"p":"<Unnamed>","l":"DoubleCell"},{"p":"<Unnamed>","l":"IntegerCell"},{"p":"<Unnamed>","l":"Main"},{"p":"<Unnamed>","l":"OpenCommand"},{"p":"<Unnamed>","l":"SaveCommand"},{"p":"<Unnamed>","l":"StringCell"}];updateSearchResults();
