@@ -20,21 +20,39 @@ public class Spreadsheet {
                     token = token.trim();
                     if (token.isEmpty()) {
                         row.add(new StringCell(""));
-                    } else if (token.matches("[+-]?\\d+")) {
-                        row.add(new IntegerCell(Integer.parseInt(token)));
-                    } else if (token.matches("[+-]?\\d+\\.\\d+")) {
-                        row.add(new DoubleCell(Double.parseDouble(token)));
-                    } else if (token.startsWith("\"")) {
-                        String parsed = token.replaceAll("\\\\\\\\", "\\").replaceAll("\\\\\"", "\"");
-                        row.add(new StringCell(parsed.substring(1, parsed.length() - 1)));
+                        continue;
+                    }
+
+                    // Опит за Integer
+                    try {
+                        int intVal = Integer.parseInt(token);
+                        row.add(new IntegerCell(intVal));
+                        continue;
+                    } catch (NumberFormatException ignored) {}
+
+                    // Опит за Double
+                    try {
+                        double doubleVal = Double.parseDouble(token);
+                        row.add(new DoubleCell(doubleVal));
+                        continue;
+                    } catch (NumberFormatException ignored) {}
+
+                    // Стринг с кавички
+                    if (token.startsWith("\"") && token.endsWith("\"") && token.length() >= 2) {
+                        String parsed = token.substring(1, token.length() - 1)
+                                .replace("\\\"", "\"")
+                                .replace("\\\\", "\\");
+                        row.add(new StringCell(parsed));
                     } else {
-                        throw new IOException("Unknown data type: " + token);
+                        // Стринг без кавички
+                        row.add(new StringCell(token));
                     }
                 }
                 data.add(row);
             }
         }
     }
+
 
     public void save() throws IOException {
         if (currentFile == null) throw new IOException("No file loaded");
@@ -62,7 +80,7 @@ public class Spreadsheet {
         for (List<Cell> row : data) {
             StringBuilder sb = new StringBuilder();
             for (Cell cell : row) {
-                sb.append(String.format("%-15s|", cell.getDisplay()));
+                sb.append(String.format("%-15s|", cell.getDisplay())); //за да се отпечата разстояние с 15 символа
             }
             System.out.println(sb);
         }
@@ -81,15 +99,31 @@ public class Spreadsheet {
         while (rowData.size() < col) {
             rowData.add(new StringCell(""));
         }
-        if (value.matches("[+-]?\\d+")) {
-            rowData.set(col - 1, new IntegerCell(Integer.parseInt(value)));
-        } else if (value.matches("[+-]?\\d+\\.\\d+")) {
-            rowData.set(col - 1, new DoubleCell(Double.parseDouble(value)));
-        } else if (value.startsWith("\"")) {
-            String parsed = value.replaceAll("\\\\\\\\", "\\").replaceAll("\\\\\"", "\"");
-            rowData.set(col - 1, new StringCell(parsed.substring(1, parsed.length() - 1)));
+
+        // Опит за Integer
+        try {
+            int intValue = Integer.parseInt(value);
+            rowData.set(col - 1, new IntegerCell(intValue));
+            return;
+        } catch (NumberFormatException ignored) {}
+
+        // Опит за Double
+        try {
+            double doubleValue = Double.parseDouble(value);
+            rowData.set(col - 1, new DoubleCell(doubleValue));
+            return;
+        } catch (NumberFormatException ignored) {}
+
+        // Ако започва с кавичка, се парсва
+        if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
+            String parsed = value.substring(1, value.length() - 1)
+                    .replace("\\\"", "\"")
+                    .replace("\\\\", "\\");
+            rowData.set(col - 1, new StringCell(parsed));
         } else {
-            System.out.println("Invalid data");
+            // Всичко останало — текст без кавички
+            rowData.set(col - 1, new StringCell(value));
         }
     }
+
 }

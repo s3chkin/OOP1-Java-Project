@@ -14,7 +14,7 @@ public class EditCommand implements Command {
             int col = Integer.parseInt(parts[1]);
             String val = parts[2];
             sheet.edit(row, col, val);
-            System.out.println("core.Cell updated.");
+            System.out.println("Cell updated.");
         } catch (Exception e) {
             System.out.println("Invalid input: row col \"value\"");
         }
