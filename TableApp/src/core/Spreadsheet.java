@@ -3,10 +3,17 @@ package core;
 import java.util.*;
 import java.io.*;
 
+/**
+ * Клас за управление на електронна таблица.
+ */
+
 public class Spreadsheet {
     private List<List<Cell>> data = new ArrayList<>();
     private String currentFile = null;
 
+    /**
+     * Зарежда таблица от файл.
+     */
     public void loadFromFile(String filePath) throws IOException {
         data.clear();
         currentFile = filePath;
@@ -53,12 +60,17 @@ public class Spreadsheet {
         }
     }
 
-
+    /**
+     * Записва таблицата в текущия файл.
+     */
     public void save() throws IOException {
         if (currentFile == null) throw new IOException("No file loaded");
         saveAs(currentFile);
     }
 
+    /**
+     * Записва таблицата в нов файл.
+     */
     public void saveAs(String filePath) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (List<Cell> row : data) {
@@ -76,6 +88,9 @@ public class Spreadsheet {
         }
     }
 
+    /**
+     * Отпечатва таблицата в конзолата.
+     */
     public void print() {
         for (List<Cell> row : data) {
             StringBuilder sb = new StringBuilder();
@@ -86,11 +101,17 @@ public class Spreadsheet {
         }
     }
 
+    /**
+     * Затваря таблицата и изчиства съдържанието.
+     */
     public void close() {
         data.clear();
         currentFile = null;
     }
 
+    /**
+     * Редактира стойността в дадена клетка.
+     */
     public void edit(int row, int col, String value) {
         while (data.size() < row) {
             data.add(new ArrayList<>());

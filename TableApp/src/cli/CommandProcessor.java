@@ -6,8 +6,15 @@ import core.Spreadsheet;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Обработва и изпълнява потребителски команди.
+ */
 public class CommandProcessor {
+    /**
+     * Свързва името на всяка команда (като низ) със съответния Command обект
+     */
     private Map<String, Command> commandMap = new HashMap<>();
+
 
     public CommandProcessor(Spreadsheet sheet) {
         commandMap.put("open", new OpenCommand(sheet));
@@ -20,6 +27,11 @@ public class CommandProcessor {
         commandMap.put("exit", new ExitCommand());
     }
 
+    /**
+     * Обработва входния низ, извлича командата и аргументите,
+     * намира съответния Command обект и го изпълнява.
+     * Ако командата не е разпозната, извежда съобщение за грешка.
+     */
     public void process(String input) {
         String[] parts = input.trim().split(" ", 2);
         String cmd = parts[0].toLowerCase();

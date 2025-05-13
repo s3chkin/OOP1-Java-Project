@@ -1,6 +1,12 @@
 package commands;
 
+/**
+ * Интерфейс за команди.
+ */
 public interface Command {
-    void execute(String args);
 
+    /**
+     * Изпълнява командата със зададени аргументи.
+     */
+    void execute(String args);
 }

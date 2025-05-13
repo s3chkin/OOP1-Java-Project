@@ -2,6 +2,9 @@ package commands;
 
 import core.Spreadsheet;
 
+/**
+ * Команда за отваряне на електронната таблица от файл.
+ */
 public class OpenCommand implements Command {
     private Spreadsheet sheet;
 

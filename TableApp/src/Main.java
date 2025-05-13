@@ -3,6 +3,9 @@ import core.Spreadsheet;
 
 import java.util.Scanner;
 
+/**
+ * Началната точка на програмата. Инициализира необходимите обекти и започва командния цикъл.
+ */
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);

@@ -1,7 +1,9 @@
 package commands;
 
 import core.Spreadsheet;
-
+/**
+ * Команда за редактиране на стойност в електронната таблица.
+ */
 public class EditCommand implements Command {
     private Spreadsheet sheet;
     public EditCommand(Spreadsheet sheet) {
