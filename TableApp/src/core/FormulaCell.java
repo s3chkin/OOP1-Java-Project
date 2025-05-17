@@ -1,14 +1,32 @@
 package core;
 
+/**
+ * Класът FormulaCell представлява клетка, която съдържа формула.
+ * Формулата може да бъде проста аритметична операция между две стойности
+ * (числа или препратки към други клетки) или една стойност.
+ */
 public class FormulaCell extends Cell {
     private String formula;
     private Spreadsheet spreadsheet;
 
+    /**
+     * Конструктор на клетка с формула.
+     *
+     * @param formula     формулата, която тази клетка ще изчислява (напр. "=R1C1 + R2C2")
+     * @param spreadsheet препратка към електронната таблица, нужна за извличане на други клетки
+     */
     public FormulaCell(String formula, Spreadsheet spreadsheet) {
         this.formula = formula;
         this.spreadsheet = spreadsheet;
     }
 
+    /**
+     * Връща стойността на клетката във вид, подходящ за показване.
+     * Ако има грешка в изчислението, връща "ERROR".
+     * Ако стойността е цяло число, връща без десетична точка.
+     *
+     * @return низова стойност за показване
+     */
     @Override
     public String getDisplay() {
         double result = getValue();
@@ -17,13 +35,20 @@ public class FormulaCell extends Cell {
         return "" + result;
     }
 
+    /**
+     * Изчислява стойността на формулата в клетката.
+     * Поддържат се прости операции: +, -, *, / между два операнда.
+     * Операндите могат да са числа или препратки към клетки.
+     *
+     * @return изчислената стойност или {@code Double.NaN} при грешка
+     */
     @Override
     public double getValue() {
         try {
             String expr = formula.trim();
             if (expr.startsWith("=")) expr = expr.substring(1).trim();
 
-            // Поддържаме само един оператор и два операнда
+            // Поддържа само един оператор и два операнда
             String op = null;
             if (expr.contains(" + ")) op = "+";
             else if (expr.contains(" - ")) op = "-";
@@ -51,6 +76,12 @@ public class FormulaCell extends Cell {
         return Double.NaN;
     }
 
+    /**
+     * Парсва даден операнд – може да е число, низ или препратка към друга клетка (формат R<row>C<col>).
+     *
+     * @param token текстов представител на операнда
+     * @return стойността на операнда като число
+     */
     private double parseOperand(String token) {
         token = token.trim();
         // Референция към клетка: R<N>C<M>
@@ -76,8 +107,11 @@ public class FormulaCell extends Cell {
         return convertStringToNumber(token);
     }
 
+    /**
+     * Конвертира низ към число, ако е възможно.
+     * В противен случай връща 0.0.
+     */
     private double convertStringToNumber(String str) {
-        // Само ако е валидно число или валидно дробно число
         try {
             return Double.parseDouble(str);
         } catch (NumberFormatException ignored) {}
