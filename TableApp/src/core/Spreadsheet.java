@@ -1,7 +1,7 @@
 package core;
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 /**
  * Клас за управление на електронна таблица.
@@ -135,6 +135,12 @@ public class Spreadsheet {
             return;
         } catch (NumberFormatException ignored) {}
 
+        // Ако е формула
+        if (value.startsWith("=")) {
+            rowData.set(col - 1, new FormulaCell(value, this));
+            return;
+        }
+
         // Ако започва с кавичка, се парсва
         if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
             String parsed = value.substring(1, value.length() - 1)
@@ -147,4 +153,13 @@ public class Spreadsheet {
         }
     }
 
+    /**
+     * Връща клетка по координати (ред и колона, започващи от 1). Ако няма такава, връща null.
+     */
+    public Cell getCell(int row, int col) {
+        if (row < 1 || col < 1 || row > data.size()) return null;
+        List<Cell> rowData = data.get(row - 1);
+        if (col > rowData.size()) return null;
+        return rowData.get(col - 1);
+    }
 }
