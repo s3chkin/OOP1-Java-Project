@@ -12,8 +12,8 @@ public class FormulaCell extends Cell {
     /**
      * Конструктор на клетка с формула.
      *
-     * @param formula     формулата, която тази клетка ще изчислява (напр. "=R1C1 + R2C2")
-     * @param spreadsheet препратка към електронната таблица, нужна за извличане на други клетки
+     * formula     формулата, която тази клетка ще изчислява (напр. "=R1C1 + R2C2")
+     * spreadsheet препратка към електронната таблица, нужна за извличане на други клетки
      */
     public FormulaCell(String formula, Spreadsheet spreadsheet) {
         this.formula = formula;
@@ -25,7 +25,6 @@ public class FormulaCell extends Cell {
      * Ако има грешка в изчислението, връща "ERROR".
      * Ако стойността е цяло число, връща без десетична точка.
      *
-     * @return низова стойност за показване
      */
     @Override
     public String getDisplay() {
@@ -40,7 +39,6 @@ public class FormulaCell extends Cell {
      * Поддържат се прости операции: +, -, *, / между два операнда.
      * Операндите могат да са числа или препратки към клетки.
      *
-     * @return изчислената стойност или {@code Double.NaN} при грешка
      */
     @Override
     public double getValue() {
@@ -48,17 +46,22 @@ public class FormulaCell extends Cell {
             String expr = formula.trim();
             if (expr.startsWith("=")) expr = expr.substring(1).trim();
 
-            // Поддържа само един оператор и два операнда
             String op = null;
-            if (expr.contains(" + ")) op = "+";
-            else if (expr.contains(" - ")) op = "-";
-            else if (expr.contains(" * ")) op = "*";
-            else if (expr.contains(" / ")) op = "/";
+            int opIndex = -1; // -1 означава, че не е намерен оператор в израза
 
-            if (op != null) {
-                String[] parts = expr.split(" \\" + op + " ");
-                double left = parseOperand(parts[0]);
-                double right = parseOperand(parts[1]);
+            // Намираме първия оператор, за да поддържаме прости изрази
+            if (expr.contains("+")) { op = "+"; opIndex = expr.indexOf("+"); }
+            else if (expr.contains("-")) { op = "-"; opIndex = expr.indexOf("-"); }
+            else if (expr.contains("*")) { op = "*"; opIndex = expr.indexOf("*"); }
+            else if (expr.contains("/")) { op = "/"; opIndex = expr.indexOf("/"); }
+
+            if (op != null && opIndex > 0) { // Проверка opIndex > 0, за да не е минус
+                String leftStr = expr.substring(0, opIndex).trim();
+                String rightStr = expr.substring(opIndex + 1).trim();
+                
+                double left = parseOperand(leftStr);
+                double right = parseOperand(rightStr);
+
                 if (op.equals("+")) return left + right;
                 if (op.equals("-")) return left - right;
                 if (op.equals("*")) return left * right;
@@ -67,7 +70,7 @@ public class FormulaCell extends Cell {
                     return left / right;
                 }
             } else {
-                // Само един операнд
+                // Няма оператор или е само един операнд
                 return parseOperand(expr);
             }
         } catch (Exception e) {
@@ -79,8 +82,7 @@ public class FormulaCell extends Cell {
     /**
      * Парсва даден операнд – може да е число, низ или препратка към друга клетка (формат R<row>C<col>).
      *
-     * @param token текстов представител на операнда
-     * @return стойността на операнда като число
+     *  token - текстов представител на операнда
      */
     private double parseOperand(String token) {
         token = token.trim();
