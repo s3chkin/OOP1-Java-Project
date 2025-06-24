@@ -5,39 +5,70 @@ package core;
  */
 
 public abstract class Cell {
-    /**
-     * Връща стойността на клетката като текст, подходящ за визуализиране.
-     */
+    private Cell nextCell;
+    public Cell getNextCell() {
+        return nextCell;
+    }
+    public void setNextCell(Cell nextCell) {
+        this.nextCell = nextCell;
+    }
+    /** Връща стойността на клетката като текст, подходящ за визуализиране. */
     public abstract String getDisplay();
     public abstract double getValue();
 
+    /**
+     * Създава подходящия тип клетка според подадения текст.
+     */
     public static Cell createCell(String value, Spreadsheet spreadsheet) {
-        // Опит за Integer
-        try {
-            int intValue = Integer.parseInt(value);
-            return new IntegerCell(intValue);
-        } catch (NumberFormatException ignored) {}
-
-        // Опит за Double
-        try {
-            double doubleValue = Double.parseDouble(value);
-            return new DoubleCell(doubleValue);
-        } catch (NumberFormatException ignored) {}
-
-        // Ако е формула
-        if (value.startsWith("=")) {
+        if (isInteger(value)) { // Ако е цяло число
+            return new IntegerCell(Integer.parseInt(value));
+        }
+        if (isDouble(value)) { // Ако е дробно число
+            return new DoubleCell(Double.parseDouble(value));
+        }
+        if (value.startsWith("=")) { // Ако е формула
             return new FormulaCell(value, spreadsheet);
         }
-
-        // Ако започва с кавичка, се парсва
+        // Ако е текст с кавички
         if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
             String parsed = value.substring(1, value.length() - 1)
                     .replace("\\\"", "\"")
                     .replace("\\\\", "\\");
             return new StringCell(parsed);
         }
-
-        // Всичко останало — текст без кавички или празен стринг
+        // Всичко останало е текст
         return new StringCell(value);
     }
+
+    /** Проверява дали стрингът е валидно цяло число (с минус по избор). */
+    private static boolean isInteger(String s) {
+        if (s == null || s.isEmpty()) return false;
+        int start = (s.charAt(0) == '-') ? 1 : 0;
+        if (start == 1 && s.length() == 1) return false; //проверка за първия символ дали е -
+        for (int i = start; i < s.length(); i++) {
+            if (!Character.isDigit(s.charAt(i))) return false;
+        }
+        return true;
+    }
+
+    /** Проверява дали стрингът е валидно дробно число (с опционален минус и точно една точка). */
+    private static boolean isDouble(String s) {
+        if (s == null || s.isEmpty()) return false;
+        int start = (s.charAt(0) == '-') ? 1 : 0; //проверка за първия символ дали е -
+        boolean pointSeen = false;
+        int digits = 0;
+        for (int i = start; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '.') {
+                if (pointSeen) return false; // повече от една точка
+                pointSeen = true;
+            } else if (Character.isDigit(c)) {
+                digits++;
+            } else {
+                return false;
+            }
+        }
+        return pointSeen && digits > 0;
+    }
 }
+

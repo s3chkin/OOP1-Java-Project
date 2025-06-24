@@ -10,9 +10,7 @@ public class FormulaCell extends Cell {
     private Spreadsheet spreadsheet;
 
     /**
-     * Конструктор на клетка с формула.
-     *
-     * formula     формулата, която тази клетка ще изчислява (напр. "=R1C1 + R2C2")
+     * formula - формулата, която тази клетка ще изчислява (напр. "=R1C1 + R2C2")
      * spreadsheet препратка към електронната таблица, нужна за извличане на други клетки
      */
     public FormulaCell(String formula, Spreadsheet spreadsheet) {
@@ -49,7 +47,7 @@ public class FormulaCell extends Cell {
             String op = null;
             int opIndex = -1; // -1 означава, че не е намерен оператор в израза
 
-            // Намираме първия оператор, за да поддържаме прости изрази
+            // Намираме първия оператор, за да поддържа прости изрази
             if (expr.contains("+")) { op = "+"; opIndex = expr.indexOf("+"); }
             else if (expr.contains("-")) { op = "-"; opIndex = expr.indexOf("-"); }
             else if (expr.contains("*")) { op = "*"; opIndex = expr.indexOf("*"); }
