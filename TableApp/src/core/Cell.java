@@ -19,7 +19,7 @@ public abstract class Cell {
     /**
      * Създава подходящия тип клетка според подадения текст.
      */
-    public static Cell createCell(String value, Spreadsheet spreadsheet) {
+    public static Cell createCell(String value, Object context) {
         if (isInteger(value)) { // Ако е цяло число
             return new IntegerCell(Integer.parseInt(value));
         }
@@ -27,7 +27,14 @@ public abstract class Cell {
             return new DoubleCell(Double.parseDouble(value));
         }
         if (value.startsWith("=")) { // Ако е формула
-            return new FormulaCell(value, spreadsheet);
+            if (context instanceof Spreadsheet) {
+                return new FormulaCell(value, (Spreadsheet) context);
+            } else if (context instanceof TableManager) {
+                // Създаваме временен Spreadsheet за FormulaCell
+                Spreadsheet tempSheet = new Spreadsheet();
+                return new FormulaCell(value, tempSheet);
+            }
+            return new StringCell(value); // Fallback
         }
         // Ако е текст с кавички
         if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
